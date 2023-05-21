@@ -16,20 +16,8 @@ class MoveStrategy(ABC):
 
 class BishopMoveDiagonal(MoveStrategy):
 
-    __instance = None
-
-    def __init__(self):
-        if BishopMoveDiagonal.__instance == None:
-            super().__init__()
-            BishopMoveDiagonal.__instance = self
-        else:
-            raise Exception("This class is a singleton!")
-
-    @staticmethod
-    def get_instance(piece):
-        if BishopMoveDiagonal.__instance == None:
-            BishopMoveDiagonal(piece)
-        return BishopMoveDiagonal.__instance
+    def __init__(self, piece):
+        self.piece = piece
 
     def valid_moves(self, board):
         current_position = board.get_position(self.piece)
@@ -92,20 +80,8 @@ class BishopMoveDiagonal(MoveStrategy):
 
 class RookeMoveHorizontal(MoveStrategy):
 
-    __instance = None
-
-    def __init__(self):
-        if RookeMoveHorizontal.__instance == None:
-            super().__init__()
-            RookeMoveHorizontal.__instance = self
-        else:
-            raise Exception("This class is a singleton!")
-
-    @staticmethod
-    def get_instance(piece):
-        if RookeMoveHorizontal.__instance == None:
-            RookeMoveHorizontal(piece)
-        return RookeMoveHorizontal.__instance
+    def __init__(self, piece):
+        self.piece = piece
 
     def valid_moves(self, board):
         current_position = board.get_position(self.piece)
@@ -165,28 +141,16 @@ class RookeMoveHorizontal(MoveStrategy):
 # queen will use both bishop and rooke move strategies
 class QueenMoveStrategy(MoveStrategy):
 
-    __instance = None
-
-    def __init__(self):
-        if QueenMoveStrategy.__instance == None:
-            super().__init__()
-            QueenMoveStrategy.__instance = self
-        else:
-            raise Exception("This class is a singleton!")
-
-    @staticmethod
-    def get_instance(piece):
-        if QueenMoveStrategy.__instance == None:
-            QueenMoveStrategy(piece)
-        return QueenMoveStrategy.__instance
+    def __init__(self, piece):
+        self.piece = piece
 
     def valid_moves(self, board):
         valid_moves = []
         valid_moves.extend(
-            BishopMoveDiagonal.get_instance(self.piece).valid_moves(board)
+            BishopMoveDiagonal(self.piece).valid_moves(board)
         )
         valid_moves.extend(
-            RookeMoveHorizontal.get_instance(self.piece).valid_moves(board)
+            RookeMoveHorizontal(self.piece).valid_moves(board)
         )
         return valid_moves
 
@@ -208,7 +172,7 @@ class Piece(ABC):
 class Rooke(Piece):
     def __init__(self, color):
         super().__init__(color)
-        self.move_strategy = RookeMoveHorizontal.get_instance(self)
+        self.move_strategy = RookeMoveHorizontal(self)
 
     def move(self, board, destination):
         if destination in self.valid_moves(board):
@@ -224,7 +188,7 @@ class Rooke(Piece):
 class Bishop(Piece):
     def __init__(self, color):
         super().__init__(color)
-        self.move_strategy = BishopMoveDiagonal.get_instance(self)
+        self.move_strategy = BishopMoveDiagonal(self)
 
     def move(self, board, destination):
         if destination in self.valid_moves(board):
@@ -240,7 +204,7 @@ class Bishop(Piece):
 class Queen(Piece):
     def __init__(self, color):
         super().__init__(color)
-        self.move_strategy = QueenMoveStrategy.get_instance(self)
+        self.move_strategy = QueenMoveStrategy(self)
 
     def move(self, board, destination):
         if destination in self.valid_moves(board):
